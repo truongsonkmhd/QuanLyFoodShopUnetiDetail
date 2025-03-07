@@ -19,8 +19,8 @@ public class ChiTietPhieuNhapDTO extends ChiTietPhieuDTO{
         this.phuongthucnnhap = phuongthucnnhap;
     }
 
-    public ChiTietPhieuNhapDTO(int phuongthucnnhap, int maphieu, int maphienbansp, int soluong, int dongia) {
-        super(maphieu, maphienbansp, soluong, dongia);
+    public ChiTietPhieuNhapDTO(int phuongthucnnhap, int maphieu, int soluong, int dongia) {
+        super(maphieu, soluong, dongia);
         this.phuongthucnnhap = phuongthucnnhap;
     }
 

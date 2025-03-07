@@ -10,17 +10,17 @@ import java.util.ArrayList;
  * @author Pham Truong Son
  */
 public class PhienBanSanPhamBUS {
-    private PBSanPhamDao cauhinhDAO = new PBSanPhamDao();
+    private PBSanPhamDao pbsp = new PBSanPhamDao();
     
     public PhienBanSanPhamBUS() {
     }
     
     public ArrayList<PhienBanSanPhamDTO> getAll(int masp) {
-        return cauhinhDAO.selectAllpb(Integer.toString(masp));
+        return pbsp.selectAllpb(Integer.toString(masp));
     }
     
     public PhienBanSanPhamDTO getByMaPhienBan(int mapb) {
-        return cauhinhDAO.selectById(mapb);
+        return pbsp.selectById(mapb);
     }
     public int getIndexByMaPhienBan(ArrayList<PhienBanSanPhamDTO> list, int mapb) {
         int i = 0;
@@ -47,16 +47,16 @@ public class PhienBanSanPhamBUS {
     }
     
     public Boolean add(ArrayList<PhienBanSanPhamDTO> listch) {
-        boolean check = cauhinhDAO.insert(listch) != 0;
+        boolean check = pbsp.insert(listch) != 0;
         return check;
     } 
     
     public int getSoluong(int maphienban){
-        return cauhinhDAO.selectById(maphienban).getSoluongton();
+        return pbsp.selectById(maphienban).getSoluongton();
     }
     
     public boolean checkImeiExists(ArrayList<ChiTietSanPhamDTO> arr){
-        return cauhinhDAO.checkImeiExists(arr);
+        return pbsp.checkImeiExists(arr);
     }
 }
 

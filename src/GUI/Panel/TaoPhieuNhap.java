@@ -1,9 +1,6 @@
 package GUI.Panel;
 
 import BUS.PhienBanSanPhamBUS;
-import BUS.DungLuongRamBUS;
-import BUS.DungLuongRomBUS;
-import BUS.MauSacBUS;
 import BUS.NhaCungCapBUS;
 import BUS.PhieuNhapBUS;
 import BUS.SanPhamBUS;
@@ -58,9 +55,9 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
     JTable tablePhieuNhap, tableSanPham;
     JScrollPane scrollTablePhieuNhap, scrollTableSanPham;
     DefaultTableModel tblModel, tblModelSP;
-    ButtonCustom btnAddSp, btnEditSP, btnDelete, btnImport, btnNhapHang;
+    ButtonCustom btnAddSp, btnEditSP, btnDelete, btnNhapHang;
     InputForm txtMaphieu, txtNhanVien, txtMaSp, txtTenSp, txtDongia, txtMaImeiTheoLo, txtSoLuongImei;
-    SelectForm cbxNhaCungCap, cbxCauhinh, cbxPtNhap;
+    SelectForm cbxNhaCungCap, cbxPtNhap;
     JTextField txtTimKiem;
     JLabel labelImei, lbltongtien;
     JTextArea textAreaImei;
@@ -71,10 +68,7 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
     SanPhamBUS spBUS = new SanPhamBUS();
     NhaCungCapBUS nccBus = new NhaCungCapBUS();
     PhienBanSanPhamBUS phienbanBus = new PhienBanSanPhamBUS();
-    DungLuongRamBUS ramBus = new DungLuongRamBUS();
-    DungLuongRomBUS romBus = new DungLuongRomBUS();
     PhieuNhapBUS phieunhapBus = new PhieuNhapBUS();
-    MauSacBUS mausacBus = new MauSacBUS();
     NhanVienDTO nvDto;
 
     ArrayList<DTO.SanPhamDTO> listSP = spBUS.getAll();
@@ -84,7 +78,6 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
     ArrayList<String> listmaimei = new ArrayList<>();
     int maphieunhap;
     int rowPhieuSelect = -1;
-    private ButtonCustom scanImei, importImei;
 
     public TaoPhieuNhap(NhanVienDTO nv, String type, Main m) {
         this.nvDto = nv;
@@ -126,14 +119,14 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         tablePhieuNhap = new JTable();
         scrollTablePhieuNhap = new JScrollPane();
         tblModel = new DefaultTableModel();
-        String[] header = new String[]{"STT", "Mã SP", "Tên sản phẩm", "RAM", "ROM", "Màu sắc", "Đơn giá", "Số lượng"};
+        String[] header = new String[]{"STT", "Mã SP", "Tên sản phẩm", "Đơn giá", "Số lượng"};
         tblModel.setColumnIdentifiers(header);
         tablePhieuNhap.setModel(tblModel);
         scrollTablePhieuNhap.setViewportView(tablePhieuNhap);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableColumnModel columnModel = tablePhieuNhap.getColumnModel();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 5; i++) {
             if (i != 2) {
                 columnModel.getColumn(i).setCellRenderer(centerRenderer);
             }
@@ -238,11 +231,8 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         txtTenSp = new InputForm("Tên sản phẩm");
         txtTenSp.setEditable(false);
 
-        String[] arrCauhinh = {"Chọn sản phẩm"};
         JPanel content_right_top_cbx = new JPanel(new BorderLayout());
         content_right_top_cbx.setPreferredSize(new Dimension(100, 180));
-        cbxCauhinh = new SelectForm("Cấu hình", arrCauhinh);
-        cbxCauhinh.cbb.addItemListener(this);
         txtDongia = new InputForm("Giá nhập");
         PlainDocument dongia = (PlainDocument) txtDongia.getTxtForm().getDocument();
         dongia.setDocumentFilter((new NumericDocumentFilter()));
@@ -250,7 +240,6 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         cbxPtNhap = new SelectForm("Phương thức nhập", arrPtNhap);
         cbxPtNhap.cbb.addItemListener(this);
         cbxPtNhap.setPreferredSize(new Dimension(100, 90));
-        content_right_top_cbx.add(cbxCauhinh, BorderLayout.WEST);
         content_right_top_cbx.add(txtDongia, BorderLayout.CENTER);
         content_right_top_cbx.add(cbxPtNhap, BorderLayout.SOUTH);
         content_right_top.add(txtMaSp, BorderLayout.WEST);
@@ -275,11 +264,7 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         JPanel card_content_two_model = new JPanel(new BorderLayout());
         card_content_two_model.setBorder(new EmptyBorder(10, 10, 10, 10));
         labelImei = new JLabel("Mã Imei");
-        labelImei.setPreferredSize(new Dimension(70, 0));
-        scanImei = new ButtonCustom("Quét imei", "success", 13);
-        scanImei.setPreferredSize(new Dimension(110, 0));
-        importImei = new ButtonCustom("Nhập Excel", "excel", 13);
-        importImei.setPreferredSize(new Dimension(110, 0));
+        labelImei.setPreferredSize(new Dimension(70, 0));      
         JPanel panelScanCenter = new JPanel();
         panelScanCenter.setBackground(Color.WHITE);
         JPanel jpanelImei = new JPanel(new BorderLayout());
@@ -288,14 +273,6 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         jpanelImei.setBorder(new EmptyBorder(0, 0, 10, 0));
         jpanelImei.add(labelImei, BorderLayout.WEST);
         jpanelImei.add(panelScanCenter, BorderLayout.CENTER);
-        JPanel chucnang = new JPanel(new GridLayout(1, 2));
-        chucnang.setOpaque(false);
-        chucnang.add(scanImei);
-        chucnang.add(importImei);
-        jpanelImei.add(chucnang, BorderLayout.EAST);
-
-        scanImei.addActionListener(this);
-        importImei.addActionListener(this);
         textAreaImei = new JTextArea(6, 4);
         //textAreaImei.setDocument((Document) new NumericDocumentFilter());
         textAreaImei.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153)));
@@ -321,15 +298,12 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         btnAddSp = new ButtonCustom("Thêm sản phẩm", "success", 14);
         btnEditSP = new ButtonCustom("Sửa sản phẩm", "warning", 14);
         btnDelete = new ButtonCustom("Xoá sản phẩm", "danger", 14);
-        btnImport = new ButtonCustom("Nhập Excel", "excel", 14);
         btnAddSp.addActionListener(this);
         btnEditSP.addActionListener(this);
         btnDelete.addActionListener(this);
-        btnImport.addActionListener(this);
         btnEditSP.setEnabled(false);
         btnDelete.setEnabled(false);
         content_btn.add(btnAddSp);
-        content_btn.add(btnImport);
         content_btn.add(btnEditSP);
         content_btn.add(btnDelete);
 
@@ -411,8 +385,7 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         for (int i = 0; i < size; i++) {
             PhienBanSanPhamDTO pb = phienbanBus.getByMaPhienBan(ctPhieu.get(i).getMaphienbansp());
             tblModel.addRow(new Object[]{
-                i + 1, pb.getMasp(), spBUS.getByMaSP(pb.getMasp()).getTensp(), ramBus.getKichThuocById(pb.getRam()) + "GB",
-                romBus.getKichThuocById(pb.getRom()) + "GB", mausacBus.getTenMau(pb.getMausac()),
+                i + 1, pb.getMasp(), spBUS.getByMaSP(pb.getMasp()).getTensp(),
                 Formater.FormatVND(ctPhieu.get(i).getDongia()), ctPhieu.get(i).getSoluong()
             });
         }
@@ -423,14 +396,11 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         this.txtMaSp.setText(Integer.toString(sp.getMasp()));
         this.txtTenSp.setText(sp.getTensp());
         ch = phienbanBus.getAll(sp.getMasp());
-        cbxCauhinh.setArr(getCauHinhPhienBan(sp.getMasp()));
         this.txtDongia.setText(Integer.toString(ch.get(0).getGianhap()));
     }
 
     public ChiTietPhieuNhapDTO getInfoChiTietPhieu() {
         
-        int masp = Integer.parseInt(txtMaSp.getText());
-        int maphienbansp = ch.get(cbxCauhinh.cbb.getSelectedIndex()).getMaphienbansp();
         int gianhap = Integer.parseInt(txtDongia.getText());
         int phuongthucnhap = cbxPtNhap.getSelectedIndex();
         ArrayList<ChiTietSanPhamDTO> ctSP = getChiTietSanPham();
@@ -531,9 +501,7 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
                 case 1 ->
                     c.last(content_right_bottom);
             }
-        } else if(source == btnImport ) {
-            JOptionPane.showMessageDialog(this, "Tính năng chưa phát triển");
-        }
+        } 
     }
 
     public void addCtPhieu() {
@@ -585,7 +553,6 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         PhienBanSanPhamDTO pb = phienbanBus.getByMaPhienBan(phieu.getMaphienbansp());
         this.txtMaSp.setText(Integer.toString(pb.getMasp()));
         this.txtTenSp.setText(spBUS.getByMaSP(pb.getMasp()).getTensp());
-        this.cbxCauhinh.setArr(getCauHinhPhienBan(pb.getMasp()));
         this.cbxCauhinh.setSelectedIndex(phienbanBus.getIndexByMaPhienBan(ch, phieu.getMaphienbansp()));
         this.txtDongia.setText(Integer.toString(phieu.getDongia()));
         setImei(phieu);
@@ -607,18 +574,13 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         ch = phienbanBus.getAll(masp);
         int size = ch.size();
         String[] arr = new String[size];
-        for (int i = 0; i < size; i++) {
-            arr[i] = romBus.getKichThuocById(ch.get(i).getRom()) + "GB - "
-                    + ramBus.getKichThuocById(ch.get(i).getRam()) + "GB - " + mausacBus.getTenMau(ch.get(i).getMausac());
-        }
+        for (int i = 0; i < size; i++) {}
         return arr;
     }
 
     public void resetForm() {
         this.txtMaSp.setText("");
         this.txtTenSp.setText("");
-        String[] arr = {"Chọn sản phẩm"};
-        this.cbxCauhinh.setArr(arr);
         this.txtDongia.setText("");
         this.txtSoLuongImei.setText("");
         this.txtMaImeiTheoLo.setText("");
@@ -650,20 +612,7 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
             loadDataTableChiTietPhieu(chitietphieu);
         } else if (source == btnNhapHang) {
             eventBtnNhapHang();
-        } else if (source == scanImei) {
-            if (ch.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Vui lòng chọn sản phẩm để quét mã!");
-            } else {
-                QRCode_Dialog qr = new QRCode_Dialog(owner, "Scan", true, textAreaImei);
-            }
-        } else if (source == importImei) {
-            getImeifromFile();
-            for (String i : listmaimei) {
-                textAreaImei.append(i + "\n");
-            }
-        } else if(source == btnImport) {
-            JOptionPane.showMessageDialog(this, "Chức năng không khả dụng !", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        }
+        } 
     }
 
     public void eventBtnNhapHang() {
@@ -688,38 +637,4 @@ public final class TaoPhieuNhap extends JPanel implements ItemListener, ActionLi
         }
     }
 
-    public void getImeifromFile() {
-        File excelFile;
-        FileInputStream excelFIS = null;
-        BufferedInputStream excelBIS = null;
-        XSSFWorkbook excelJTableImport = null;
-        JFileChooser jf = new JFileChooser();
-        int result = jf.showOpenDialog(null);
-        jf.setDialogTitle("Open file");
-        Workbook workbook = null;
-        if (result == JFileChooser.APPROVE_OPTION) {
-            try {
-                excelFile = jf.getSelectedFile();
-                JOptionPane.showMessageDialog(this, excelFile);
-                excelFIS = new FileInputStream(excelFile);
-                excelBIS = new BufferedInputStream(excelFIS);
-                excelJTableImport = new XSSFWorkbook(excelBIS);
-                XSSFSheet excelSheet = excelJTableImport.getSheetAt(0);
-                for (int row = 1; row <= excelSheet.getLastRowNum(); row++) {
-                    XSSFRow excelRow = excelSheet.getRow(row);
-                    String maimei = excelRow.getCell(0).getStringCellValue();
-                    if (maimei.length() != 15) {
-                        continue;
-                    } else {
-                        this.listmaimei.add(maimei);
-                        System.out.println(maimei);
-                    }
-                }
-            } catch (FileNotFoundException ex) {
-                System.out.println("Lỗi đọc file 1");
-            } catch (IOException ex) {
-                System.out.println("Lỗi đọc file 2");
-            }
-        }
-    }
 }

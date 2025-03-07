@@ -1,10 +1,12 @@
 package GUI.Dialog;
 
-import BUS.KhuVucKhoBUS;
+import BUS.GiamGiaBUS;
 import BUS.PhienBanSanPhamBUS;
+import BUS.KhuVucKhoBUS;
+import BUS.SizeSpBUS;
 import BUS.ThuongHieuBUS;
 import BUS.XuatXuBUS;
-import DAO.PBSanPhamDao;
+import DAO.PhienBanSanPhamDAO;
 import DAO.SanPhamDAO;
 import DTO.PhienBanSanPhamDTO;
 import DTO.SanPhamDTO;
@@ -58,7 +60,7 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
     private ButtonCustom btnThemCHMS, btnHuyBo, btnAddCauHinh, btnEditCTCauHinh, btnDeleteCauHinh, btnResetCauHinh, btnAddSanPham, btnBack, btnViewCauHinh;
     InputForm tenSP;
     InputForm txtgianhap, txtgiaxuat;
-    SelectForm xuatxu;
+    SelectForm cbxRom, cbxRam, cbxMausac,xuatxu;
     SelectForm thuonghieu, khuvuc;
     InputImage hinhanh;
     JTable tblcauhinh;
@@ -68,11 +70,13 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
     GUI.Panel.SanPham jpSP;
 
     
+    SizeSpBUS sizeBus = new SizeSpBUS();
+    GiamGiaBUS giamGiaBus = new GiamGiaBUS();
     KhuVucKhoBUS kvkhoBus = new KhuVucKhoBUS();
     ThuongHieuBUS thuonghieuBus = new ThuongHieuBUS();
     XuatXuBUS xuatXuBUS = new XuatXuBUS();
 
-        ArrayList<PhienBanSanPhamDTO> listch = new ArrayList<>();
+    ArrayList<PhienBanSanPhamDTO> listch = new ArrayList<>();
     SanPhamDTO sp;
     String[] arrkhuvuc;
     String[] arrthuonghieu;
@@ -89,7 +93,7 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
     public void init(SanPham jpSP) {
         this.jpSP = jpSP;
         masp = jpSP.spBUS.spDAO.getAutoIncrement();
-        mach = PBSanPhamDao.getInstance().getAutoIncrement();
+        mach = PhienBanSanPhamDAO.getInstance().getAutoIncrement();
         arrkhuvuc = kvkhoBus.getArrTenKhuVuc();
         arrthuonghieu = thuonghieuBus.getArrTenThuongHieu();
         arrXX = xuatXuBUS.getArrTenXuatXu();
@@ -106,6 +110,7 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
         super(owner, title, modal);
         init(jpSP);
         this.sp = sp;
+        this.listch = jpSP.spBUS.cauhinhBus.getAll(sp.getMasp());
         initComponents(title, type);
     }
 
@@ -123,11 +128,11 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
 
         tenSP = new InputForm("Tên sản phẩm");
         xuatxu = new SelectForm("Xuất xứ", arrXX);
-
         thuonghieu = new SelectForm("Thương hiệu", arrthuonghieu);
         khuvuc = new SelectForm("Khu vực kho", arrkhuvuc);
         hinhanh = new InputImage("Hình minh họa");
-         pninfosanpham.add(tenSP);
+
+        pninfosanpham.add(tenSP);
         pninfosanpham.add(xuatxu);
         pninfosanpham.add(thuonghieu);
         pninfosanpham.add(khuvuc);
@@ -166,12 +171,18 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
     public void initCardTwo(String type) {
         pncard2 = new JPanel(new BorderLayout());
         JPanel cauhinhtop = new JPanel(new GridLayout(1, 5));
+        cbxRom = new SelectForm("ROM", romBus.getArrKichThuoc());
+        cbxRam = new SelectForm("RAM", ramBus.getArrKichThuoc());
+        cbxMausac = new SelectForm("Màu sắc", mausacBus.getArrTenMauSac());
         txtgianhap = new InputForm("Giá nhập");
         PlainDocument nhap = (PlainDocument)txtgianhap.getTxtForm().getDocument();
         nhap.setDocumentFilter((new NumericDocumentFilter()));
         txtgiaxuat = new InputForm("Giá xuất");
         PlainDocument xuat = (PlainDocument)txtgiaxuat.getTxtForm().getDocument();
         xuat.setDocumentFilter((new NumericDocumentFilter()));
+        cauhinhtop.add(cbxRom);
+        cauhinhtop.add(cbxRam);
+        cauhinhtop.add(cbxMausac);
         cauhinhtop.add(txtgianhap);
         cauhinhtop.add(txtgiaxuat);
 
@@ -375,9 +386,11 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
             if(index < 0){
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn cấu hình");
             } else {
+            listch.get(index).setRam(ramBus.getByIndex(cbxRam.getSelectedIndex()).getMadlram());
+            listch.get(index).setRom(romBus.getByIndex(cbxRom.getSelectedIndex()).getMadungluongrom());
             listch.get(index).setGianhap(Integer.parseInt(txtgianhap.getText()));
             listch.get(index).setGiaxuat(Integer.parseInt(txtgiaxuat.getText()));
-            PBSanPhamDao.getInstance().update(listch.get(index));
+            PhienBanSanPhamDAO.getInstance().update(listch.get(index));
             loadDataToTableCauHinh(this.listch);
             resetFormCauHinh();
             }
@@ -422,7 +435,9 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
             int index = getRowCauHinh();
             if(index < 0){
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn cấu hình");
-            } else { 
+            } else {
+            listch.get(index).setRam(ramBus.getByIndex(cbxRam.getSelectedIndex()).getMadlram());
+            listch.get(index).setRom(romBus.getByIndex(cbxRom.getSelectedIndex()).getMadungluongrom());
             listch.get(index).setGianhap(Integer.parseInt(txtgianhap.getText()));
             listch.get(index).setGiaxuat(Integer.parseInt(txtgiaxuat.getText()));
             loadDataToTableCauHinh(this.listch);
@@ -444,10 +459,9 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
         String hinhanh = this.hinhanh.getUrl_img();
         String vtensp = tenSP.getText();
         int vxuatxu = xuatXuBUS.getAll().get(this.xuatxu.getSelectedIndex()).getMaxuatxu();
-   
         int vthuonghieu = thuonghieuBus.getAll().get(this.thuonghieu.getSelectedIndex()).getMathuonghieu();
         int khuvuckho = kvkhoBus.getAll().get(this.khuvuc.getSelectedIndex()).getMakhuvuc();
-        SanPhamDTO result = new SanPhamDTO(masp, vtensp, hinhanh, vxuatxu,  vthuonghieu, khuvuckho, 0);
+        SanPhamDTO result = new SanPhamDTO(masp, vtensp, hinhanh, vxuatxu, vthuonghieu, khuvuckho, 0);
         return result;
     }
 
@@ -455,31 +469,33 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
         hinhanh.setUrl_img(sp.getHinhanh());
         tenSP.setText(sp.getTensp());
         xuatxu.setSelectedItem(sp.getXuatxu());
- 
         thuonghieu.setSelectedIndex(thuonghieuBus.getIndexByMaLH(sp.getThuonghieu()));
         khuvuc.setSelectedIndex(jpSP.spBUS.getIndexByMaSP(sp.getKhuvuckho()));
     }
 
     public PhienBanSanPhamDTO getCauHinh() {
-      
+        int rom = romBus.getByIndex(cbxRom.getSelectedIndex()).getMadungluongrom();
+        int ram = ramBus.getByIndex(cbxRam.getSelectedIndex()).getMadlram();
         int gianhap = Integer.parseInt(txtgianhap.getText());
         int giaban = Integer.parseInt(txtgiaxuat.getText());
-        PhienBanSanPhamDTO chsp = new PhienBanSanPhamDTO(mach, masp, gianhap, giaban,0);
+        PhienBanSanPhamDTO chsp = new PhienBanSanPhamDTO(mach, masp, ram, rom, gianhap, giaban,0);
         mach++;
         return chsp;
     }
     
-       public PhienBanSanPhamDTO getCauHinh(int masanpham) {
+    public PhienBanSanPhamDTO getCauHinh(int masanpham) {
+        int rom = romBus.getByIndex(cbxRom.getSelectedIndex()).getMadungluongrom();
+        int ram = ramBus.getByIndex(cbxRam.getSelectedIndex()).getMadlram();
         int gianhap = Integer.parseInt(txtgianhap.getText());
         int giaban = Integer.parseInt(txtgiaxuat.getText());
-        PhienBanSanPhamDTO chsp = new PhienBanSanPhamDTO(PBSanPhamDao.getInstance().getAutoIncrement(), masanpham, gianhap, giaban);
+        PhienBanSanPhamDTO chsp = new PhienBanSanPhamDTO(PhienBanSanPhamDAO.getInstance().getAutoIncrement(), masanpham, ram, rom, mausac, gianhap, giaban);
         this.listch.add(chsp);
         return chsp;
     }
 
     public boolean validateCardOne() {
         boolean check = true;
-        if (Validation.isEmpty(tenSP.getText()) || Validation.isEmpty((String) xuatxu.getSelectedItem()) ) {
+        if (Validation.isEmpty(tenSP.getText()) || Validation.isEmpty((String) xuatxu.getSelectedItem())) {
             check = false;
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin !");
         } else {
@@ -511,20 +527,26 @@ public final class SanPhamDialog extends JDialog implements ActionListener {
     public void loadDataToTableCauHinh(ArrayList<PhienBanSanPhamDTO> ch) {
         tblModelch.setRowCount(0);
         for (int i = 0; i < ch.size(); i++) {
-            tblModelch.addRow(new Object[]{i + 1,
-              Formater.FormatVND(ch.get(i).getGiaxuat())
+            int ram = ramBus.getKichThuocById(ch.get(i).getRam());
+            int rom = romBus.getKichThuocById(ch.get(i).getRom());
+            tblModelch.addRow(new Object[]{i + 1, ram + "GB", rom + "GB",
+                 Formater.FormatVND(ch.get(i).getGianhap()), Formater.FormatVND(ch.get(i).getGiaxuat())
             });
         }
     }
 
-    public void resetFormCauHinh() {        
+    public void resetFormCauHinh() {
+        cbxMausac.setSelectedIndex(0);
+        cbxRam.setSelectedIndex(0);
+        cbxRom.setSelectedIndex(0);
         txtgianhap.setText("");
         txtgiaxuat.setText("");
     }
 
-     public void setInfoCauHinh(PhienBanSanPhamDTO ch) {
+    public void setInfoCauHinh(PhienBanSanPhamDTO ch) {
+        cbxRam.setSelectedIndex(ramBus.getIndexByMaRam(ch.getRam()));
+        cbxRom.setSelectedIndex(romBus.getIndexByMaRom(ch.getRom()));
         txtgianhap.setText(Integer.toString(ch.getGianhap()));
         txtgiaxuat.setText(Integer.toString(ch.getGiaxuat()));
     }
- 
 }

@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  *
- * @author Tran Nhat Sinh
+ * @author pts
  */
 public class ChiTietSanPhamDTO {
     private String imei;

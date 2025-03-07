@@ -21,7 +21,7 @@ public class SanPhamDAO implements DAOinterface<SanPhamDTO> {
         int result = 0;
         try {
             Connection con = (Connection) JDBCUtil.getConnection();
-            String sql = "INSERT INTO `sanpham`(`masp`, `tensp`, `hinhanh`, `xuatxu`, `chipxuly`, `dungluongpin`, `kichthuocman`, `hedieuhanh`, `phienbanhdh`, `camerasau`, `cameratruoc`, `thoigianbaohanh`, `thuonghieu`, `khuvuckho`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO `sanpham`(`masp`, `tensp`, `hinhanh`, `xuatxu`,`thuonghieu`, `khuvuckho`) VALUES (?,?,?,?,?,?)";
             PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
             pst.setInt(1, t.getMasp());
             pst.setString(2, t.getTensp());
